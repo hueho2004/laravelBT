@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 // Have to must use namespace ở đầu
-use App\Http\Controllers\Admin\DashboardConntroller;
+use App\Http\Controllers\Admin\DasboardController;
 use App\Http\Controllers\HomeController;
 
 
@@ -27,6 +27,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [HomeController::class, 'products'])->name('products');
 
 Route::get('add-products', [HomeController::class, 'getAdd']);
+
+Route::post('add-products', [HomeController::class, 'postAdd']);
+
 
 Route::put('add-products', [HomeController::class, 'putAdd']);
 
