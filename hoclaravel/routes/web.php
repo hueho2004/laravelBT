@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\DasboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyOontroller;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MyController;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailables\Content;
 use PhpParser\Node\Stmt\Return_;
@@ -44,7 +46,7 @@ use PhpParser\Node\Stmt\Return_;
 // });
 
 // Route::middleware('autho.admin')->prefix('admin')->group(function () {
-//     Route::get('/', [DashboardController::class, 'index']);
+//     Route::get('/', [DasboardController::class, 'index']);
 //     Route::resource('products', ProductsController::class)->middleware('auth.admin');
 // });
 
@@ -69,3 +71,7 @@ Route::post('demo-response',function(Request $request){
      return  redirect(route('demo-response'))->with('mess','validate không thành công');
 });
 Route::get('download-image/{link}',[HomeController::class, 'downloadImg'])->name('downImg');
+
+Route::prefix('/users')->group(function(){
+     Route::get('/',[UserController::class,'index']);
+});
