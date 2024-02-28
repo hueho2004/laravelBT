@@ -2,122 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
-use PhpParser\Node\Stmt\Case_;
-use PhpParser\Node\Stmt\Switch_;
 use App\Http\Requests\ProductRequest;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
+use App\Rules\Uppercase;
 class HomeController extends Controller
 {
+    //
     public $data = [];
     public function index()
     {
-        $this->data['welcome'] = 'Học lập trình tại Laravel';
-        $this->data['content'] = '<h3>Chương I nhập môn Laravel</h3>
-        <p>Kiến thức 1</p>
-        <p>Kiến thức 2</p>
-        <p>Kiến thức 3</p>
-        <p>Kiến thức 4</p>';
-        $this->data['dataArr']=[];
-        $this->data['index'] = 0;
-        $this->data['number']=9;
-
-        $this->data['title'] = "Đao tạo lập trình";
-
-        $this->data['message']= "Đặt hàng thành công";
-        return view('clients.home', $this->data);
+        $this->data['title'] = 'Lập trình tại unicode';
+        $this->data['message'] = "Đăng ký tài khoản thành công";
+        return view('client.home', $this->data);
     }
-
-    public function products(){
-          $this->data['title'] = "Sản phẩm";
-             return view('clients.products', $this->data);
- 
+    public function products()
+    {
+        $this->data['title'] = 'Sản phẩm';
+        return view('client.products', $this->data);
     }
-
-    public function getAdd(){
-        $this->data['title'] = "Thêm sản phẩm";
-        $this->data['errorMessage'] = "Vui lòng nhập tên sản phẩm";
-        return view('clients.add', $this->data);
-        
+    public function getAdd()
+    {
+        $this->data['title'] = 'Thêm sản phẩm';
+        $this->data['errorMessage'] = 'Vui lòng nhập thông tin  ';
+        return view('client.add', $this->data);
     }
-
-   public function postAdd(Request $request)
-{
-    $rules = [
-        'product_name' => 'required|min:6',
-        'product_price' => 'required|integer'
-    ];
-
-    $message = [
-        'product_name.required' => 'Tên :attribute bắt buộc nhập',
-        'product_name.min' => 'Tên sản phẩm không được nhỏ hơn :min ký tự',
-        'product_price.required' => 'Giá bắt buộc là phải nhập',
-        'product_price.integer' => 'Giá phải là số',
-    ];
-
-    $attributes = [
-        'product_name' => 'Tên sản phẩm',
-            'product_price' => 'Giá sản phẩm'
-    ];
-   $validator = Validator::make($request->all(), $rules, $message, $attributes);
-   // $validator->validate(); // Chạy validate
-   if($validator->fails()){
-        $validator->errors()->add('msg','Vui lòng kiểm trả dữ liệu');
-   // return redirect();
-  }else{
-    return redirect()->route('products');
-   }
-   return back()->withErrors($validator);
-        /*
+    public function postAdd(Request $request)
+    {
         $rules = [
-            'product_name' => 'required|min:6',
-            'product_price' => 'required|integer'
+           'product_name' => ['required','min:6',new Uppercase],
+            'product_price' => ['required','integer',new Uppercase]
         ];
+        // $message = [
+        //     'product_name.required' => 'Tên sản phẩm bắt buộc phải nhập',
+        //     'product_name.min' => 'Tên sản phẩm không được nhỏ hơn :min ký tự',
+        //     'product_price.required' => 'giá sản phẩm bắt buộc phải nhập',
+        //     'product_name.integer' => 'Giá sản phẩm phải là số'
+        // ];
+        $message = [
+            'required' => ':attribute bắt buộc phải nhập',
+            'min' => ':attribute không được nhỏ hơn :min ký tự',
+            'integer' => ':attribute phải là số',
+            //'uppercase' =>'Trường :attribute phải viết hoa'
+        ];
+        $attribute = [
+            'product_name' => 'Tên sản phẩm',
+            'product_price'=> 'Giá sản phẩm' 
+        ];
+        $validator =  Validator::make($request->all(), $rules, $message,$attribute);
+        $validator -> validate();
+        if ($validator->fails()) {
+            $validator->errors()->add('msg','Vui lòng kiểm tra dữ liệu');
+            //return 'Thất bại';
+        } else {
+           // return 'Thành công';
+           return redirect()->route('product')->with('msg','Validate thành công');
+        };
 
-       $message = [
-            'product_name.required' => 'Tên :attribute bắt buộc nhập',
-            'product_name.min' => 'Tên sản phẩm không được nhỏ hơn :min ký tự', // Nó sẽ hiển thị số lượng ký tự là 6 bởi vì nó sẽ lấy từ min ở trên như chúng ta đã qđ
-            'product_price.required' => 'Giá bắt buộc là phải nhập',
-            product_price.integer' => 'Giá phải là số',
-        ];
-         $message = [
-            'required' => 'Trường :attribute bắt buộc nhập',
-            'integer' => 'Giá phải là số',
-           'min' => 'Trường :attribute không được nhỏ hơn'
-        ];
-        $request->validate($rules, $message);*/
-        
+        return back()->withErrors( $validator);
+        // $request->validate($rules,$message);
+        // Xử lý việc thêm dữ liệu vào database
     }
-
-
-    
-    public function putAdd(Request $request){
-       return "Phương thức Put php";
+    public function putAdd(Request $request)
+    {
         dd($request);
     }
-
-     public function downloadImage(Request $request){
-        if(!empty($request->image)){
-            $image = trim($request->image);
-
-        //   $fileName  = basename($image);
-            $fileName = 'image_'. uniqid().'.jpg';
-            return response()->download($image, $fileName);
-        }
-       
+    public function getArray()
+    {
+        $contentArray = [
+            'name' => 'Laravel 8.x',
+            'lesson' => 'Khóa học lập trình',
+            'academy' => 'unicode âcdemy'
+        ];
+        return $contentArray;
     }
-    public function downloadDoc(Request $request){
-        if(!empty($request->file)){
-            $image = trim($request->file);
-    
-            $fileName = 'tai-lieu'. uniqid().'.pdf';
-       
-            return response()->download($image, $fileName);
+    public function downloadImg(Request $request)
+    {
+        if (!empty($request->image)) {
+            $fileName = 'image_' . uniqid() . 'jpg';
+
+            $image = trim($request->image);
+            return response()->streamDownload(function () use ($image) {
+                $imageContent = file_get_contents($image);
+                echo $imageContent;
+            }, $fileName);
         }
     }
 }
-
-
-  
