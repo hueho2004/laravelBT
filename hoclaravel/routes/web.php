@@ -5,11 +5,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\ProductsController;
-use App\Http\Controllers\Admin\DasboardController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyOontroller;
 use App\Http\Controllers\PhotoController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\MyController;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailables\Content;
@@ -73,7 +73,9 @@ Route::post('demo-response',function(Request $request){
 Route::get('download-image/{link}',[HomeController::class, 'downloadImg'])->name('downImg');
 
 Route::prefix('/users')->name('users.')->group(function(){
-     Route::get('/',[UserController::class,'index'])->name('index');
-     Route::get('/add',[UserController::class,'add'])->name('add');
-     Route::post('/add',[UserController::class,'postAdd'])->name('post-add');
+     Route::get('/',[UsersController::class,'index'])->name('index');
+     Route::get('/add',[UsersController::class,'add'])->name('add');
+     Route::post('/add',[UsersController::class,'postAdd'])->name('post-add');
+     Route::get('/edit/{id}',[UsersController::class,'getEdit'])->name('edit');
+     Route::post('/update',[UsersController::class,'postEdit'])->name('post-edit');
 });
