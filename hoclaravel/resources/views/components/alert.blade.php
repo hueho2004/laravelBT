@@ -1,1 +1,1 @@
-<div class="alert alert-{{$type}} text-center"><i class="fa fa-{{$dataIcon}}"></i>{{$content}}">Đặt hàng thành công</div>
+<div class="alert alert-{{$type}} text-center "><i class="fa fa-{{$dataIcon}}"></i>{{$content}}</div>
